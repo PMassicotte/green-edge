@@ -11,17 +11,33 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 ## Products to use
 
- - MODIS
-   - Cloud optical thickness (ftp://ladsweb.nascom.nasa.gov/allData/6/MYD08_D3/2016/)
-   - MOD08_D3 vs MYD08_D3: which one to use?
+### MODIS
 
- - AVHRR
-   - SST (ftp://eclipse.ncdc.noaa.gov/pub/OI-daily-v2/NetCDF/2016/AVHRR/)
+- ftp://ladsweb.nascom.nasa.gov/allData/6/MYD08_D3/2016/
+- MOD08_D3 vs MYD08_D3: which one to use?
 
-- Windspeed?
+#### Cloud optical thickness
+
+- Using `Cloud_Optical_Thickness_Combined_Mean` because it is also used in the PP model (see Eric and Maxime).
+
+#### Cloud fraction
+
+- Using `Cloud_Fraction_Mean`.
+
+### AVHRR
+
+- SST (ftp://eclipse.ncdc.noaa.gov/pub/OI-daily-v2/NetCDF/2016/AVHRR/)
+
+### Ice concentration?
+
+- See email from Julien.
+
+### Other
+
+Eric is having a look to these variables:
+
+- Wind speed?
+  - Quickscat
+  - CONCEPTS model (Eric)
 
 - Moist?
-
-- Cloudiness
-
-- Ice concentration?
