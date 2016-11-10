@@ -39,5 +39,6 @@ Eric is having a look to these variables:
 - Wind speed?
   - Quickscat
   - CONCEPTS model (Eric)
+  - http://www.ospo.noaa.gov/Products/atmosphere/wind.html
 
 - Moist?
