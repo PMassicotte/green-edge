@@ -17,7 +17,7 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 ### MODIS
 
-- ftp://ladsweb.nascom.nasa.gov/allData/6/MYD08_D3/2016/
+- ftp://ladsweb.nascom.nasa.gov/allData/6/MYD08_D3/
 - MOD08_D3 vs MYD08_D3: which one to use?
 
 #### Cloud optical thickness
