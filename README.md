@@ -4,10 +4,14 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 ## Green Edge
 
-- 2015: 2015-04-01 to 2015-07-15
-- 2016:
-  - Ship: 2016-06-03 to 2016-07-04
-  - Ice camp: 2016-05-01 to 2016-07-27
+### 2015
+
+- 2015-04-01 to 2015-07-15
+
+### 2016
+
+- Ship: 2016-06-03 to 2016-07-04
+- Ice camp: 2016-05-01 to 2016-07-27
 
 ## Products to use
 
