@@ -34,6 +34,7 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 ### Ice concentration?
 
+- ftp://ftp-projects.zmaw.de/seaice/AMSR2/
 - See email from Julien.
 
 ### Other
