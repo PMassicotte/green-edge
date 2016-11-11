@@ -32,9 +32,9 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 - SST (ftp://eclipse.ncdc.noaa.gov/pub/OI-daily-v2/NetCDF/2016/AVHRR/)
 
-### Ice concentration?
+### AMSR2
 
-- ftp://ftp-projects.zmaw.de/seaice/AMSR2/
+- Sea ice concentration (ftp://ftp-projects.zmaw.de/seaice/AMSR2/)
 - See email from Julien.
 
 ### Other
