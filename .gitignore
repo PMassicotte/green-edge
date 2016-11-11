@@ -34,3 +34,4 @@ vignettes/*.pdf
 *.knit.md
 
 graphs/
+.Rproj.user
