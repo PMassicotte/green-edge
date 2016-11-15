@@ -45,5 +45,6 @@ Eric is having a look to these variables:
   - Quickscat
   - CONCEPTS model (Eric)
   - http://www.ospo.noaa.gov/Products/atmosphere/wind.html
+  - Seadas?
 
 - Moist?
