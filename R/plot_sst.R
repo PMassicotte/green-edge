@@ -92,6 +92,7 @@ lapply(files, function(x){
   
   cmd <- sprintf("convert -density 72 %s -quality 50 %s.png", x, xx)
   system(cmd)
+  
 })
 
 system("convert graphs/sst/*.png -delay 3 -loop 0 /home/pmassicotte/Desktop/annimation.gif")
