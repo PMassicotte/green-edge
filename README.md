@@ -46,5 +46,7 @@ Eric is having a look to these variables:
   - CONCEPTS model (Eric)
   - http://www.ospo.noaa.gov/Products/atmosphere/wind.html
   - Seadas?
+  - http://images.remss.com/cdr/climate_data_record_browse.html?product=wind
+  - http://www.remss.com/measurements/ccmp
 
 - Moist?
