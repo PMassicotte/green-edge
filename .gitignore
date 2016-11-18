@@ -35,3 +35,6 @@ vignettes/*.pdf
 
 graphs/
 .Rproj.user
+
+# HTML generated presentations
+/presentations/*.html
