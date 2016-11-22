@@ -40,8 +40,6 @@ res %>%
   geom_line() +
   geom_point()
 
-
-
 # kd ----------------------------------------------------------------------
 
 compute_ez <- function(e) {
@@ -102,5 +100,9 @@ res <- dat %>%
 # plot(res$depth, res$sum_day, type = "l")
 pracma::trapz(res$depth, res$sum_day)
 
-write_csv()
+# *************************************************************************
+# Export the data.
+# *************************************************************************
+write_csv(res, "data/pp_z.csv")
+write_csv(dat, "data/pp_h.csv")
 
