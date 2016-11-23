@@ -119,8 +119,12 @@ dat %>%
 res <- dat %>%
   group_by(depth) %>% 
   summarise(sum_day = sum(p))
+```
 
-# plot(res$depth, res$sum_day, type = "l")
+## Calculate the integrated PP
+
+
+```r
 pracma::trapz(res$depth, res$sum_day)
 ```
 
