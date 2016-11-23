@@ -8,7 +8,7 @@
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 ```
 
-Last updated: 2016-11-23 08:38:03
+Last updated: 2016-11-23 16:23:15
 ## Open the PS file and do some cleaning
 
 
@@ -42,6 +42,9 @@ ps %>%
 
 ![plot of chunk unnamed-chunk-3](pp//unnamed-chunk-3-1.png)
 
+## Hourly PAR
+
+
 ```r
 res <- ps %>% 
   group_by(hour) %>% 
@@ -55,7 +58,7 @@ res %>%
   geom_point()
 ```
 
-![plot of chunk unnamed-chunk-3](pp//unnamed-chunk-3-2.png)
+![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-1.png)
 
 ## Calculate e at each depth
 This is done based on the integrated surface PAR and a kd value of 0.15 $m^{-1}$.
@@ -88,7 +91,7 @@ res %>%
   scale_y_reverse()
 ```
 
-![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-5](pp//unnamed-chunk-5-1.png)
 
 ```r
 # pi curve ----------------------------------------------------------------
@@ -110,7 +113,7 @@ dat %>%
   facet_wrap(~depth)
 ```
 
-![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-2.png)
+![plot of chunk unnamed-chunk-5](pp//unnamed-chunk-5-2.png)
 
 ```r
 dat %>%
@@ -122,7 +125,7 @@ dat %>%
   scale_y_reverse()
 ```
 
-![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-3.png)
+![plot of chunk unnamed-chunk-5](pp//unnamed-chunk-5-3.png)
 
 ```r
 res <- dat %>%

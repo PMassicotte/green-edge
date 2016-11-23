@@ -29,6 +29,8 @@ ps %>%
   geom_point() +
   geom_point(aes(y = par_just_below_ice_scalar_µmolquanta_corrected), col = "red")
 
+#' ## Hourly PAR
+
 res <- ps %>% 
   group_by(hour) %>% 
   nest() %>% 
