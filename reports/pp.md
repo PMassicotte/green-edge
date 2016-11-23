@@ -6,10 +6,12 @@
 #
 # DESCRIPTION:  Calculate PP based on P vs I curves.
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+```
 
-# *************************************************************************
-# Open the PS file and do some cleaning
-# *************************************************************************
+## Open the PS file and do some cleaning
+
+
+```r
 ps <- readxl::read_excel("data/pp/Global_PS_for_Takuvik.xlsx") %>% 
   janitor::clean_names() %>% 
   mutate(time = anytime::anytime(paste(date, format(time, "%H:%M:%S")))) %>% 
@@ -25,15 +27,19 @@ i <- which(ps$time >= "2015-06-20 20:20:00")
 
 ps$par_just_below_ice_scalar_µmolquanta_corrected[i] <- 
   ps$par_just_below_ice_scalar_µmolquanta_corrected[length(i):1]
+```
 
 ## Plot the "raw" data
+
+
+```r
 ps %>% 
   ggplot(aes(x = time, y = par_just_below_ice_scalar_µmolquanta)) +
   geom_point() +
   geom_point(aes(y = par_just_below_ice_scalar_µmolquanta_corrected), col = "red")
 ```
 
-![plot of chunk unnamed-chunk-1](pp//unnamed-chunk-1-1.png)
+![plot of chunk unnamed-chunk-3](pp//unnamed-chunk-3-1.png)
 
 ```r
 res <- ps %>% 
@@ -48,11 +54,13 @@ res %>%
   geom_point()
 ```
 
-![plot of chunk unnamed-chunk-1](pp//unnamed-chunk-1-2.png)
+![plot of chunk unnamed-chunk-3](pp//unnamed-chunk-3-2.png)
+
+## Calculate e at each depth
+This is done based on the integrated surface PAR and a kd value of 0.15 $m^{-1}$.
+
 
 ```r
-# kd ----------------------------------------------------------------------
-
 compute_ez <- function(e) {
 
   kd <- -0.15 #m-1
@@ -79,7 +87,7 @@ res %>%
   scale_y_reverse()
 ```
 
-![plot of chunk unnamed-chunk-1](pp//unnamed-chunk-1-3.png)
+![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-1.png)
 
 ```r
 # pi curve ----------------------------------------------------------------
@@ -101,7 +109,7 @@ dat %>%
   facet_wrap(~depth)
 ```
 
-![plot of chunk unnamed-chunk-1](pp//unnamed-chunk-1-4.png)
+![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-2.png)
 
 ```r
 dat %>%
@@ -113,7 +121,7 @@ dat %>%
   scale_y_reverse()
 ```
 
-![plot of chunk unnamed-chunk-1](pp//unnamed-chunk-1-5.png)
+![plot of chunk unnamed-chunk-4](pp//unnamed-chunk-4-3.png)
 
 ```r
 res <- dat %>%
@@ -122,6 +130,7 @@ res <- dat %>%
 ```
 
 ## Calculate the integrated PP
+This is the integrated value of PP for 1 day
 
 
 ```r
@@ -138,5 +147,7 @@ pracma::trapz(res$depth, res$sum_day)
 # *************************************************************************
 write_csv(res, "data/pp_z.csv")
 write_csv(dat, "data/pp_h.csv")
+
+# ezknitr::ezspin("R/pp.R", out_dir = "reports/", keep_html = FALSE)
 ```
 

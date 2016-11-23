@@ -4,9 +4,8 @@
 # DESCRIPTION:  Calculate PP based on P vs I curves.
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
-# *************************************************************************
-# Open the PS file and do some cleaning
-# *************************************************************************
+
+#' ## Open the PS file and do some cleaning
 ps <- readxl::read_excel("data/pp/Global_PS_for_Takuvik.xlsx") %>% 
   janitor::clean_names() %>% 
   mutate(time = anytime::anytime(paste(date, format(time, "%H:%M:%S")))) %>% 
@@ -23,7 +22,7 @@ i <- which(ps$time >= "2015-06-20 20:20:00")
 ps$par_just_below_ice_scalar_µmolquanta_corrected[i] <- 
   ps$par_just_below_ice_scalar_µmolquanta_corrected[length(i):1]
 
-## Plot the "raw" data
+#' ## Plot the "raw" data
 ps %>% 
   ggplot(aes(x = time, y = par_just_below_ice_scalar_µmolquanta)) +
   geom_point() +
@@ -40,7 +39,9 @@ res %>%
   geom_line() +
   geom_point()
 
-# kd ----------------------------------------------------------------------
+#' ## Calculate e at each depth
+
+#' This is done based on the integrated surface PAR and a kd value of 0.15 $m^{-1}$.
 
 compute_ez <- function(e) {
 
@@ -97,7 +98,10 @@ res <- dat %>%
   group_by(depth) %>% 
   summarise(sum_day = sum(p))
 
-# plot(res$depth, res$sum_day, type = "l")
+#' ## Calculate the integrated PP
+
+#' This is the integrated value of PP for 1 day
+
 pracma::trapz(res$depth, res$sum_day)
 
 # *************************************************************************
@@ -106,3 +110,4 @@ pracma::trapz(res$depth, res$sum_day)
 write_csv(res, "data/pp_z.csv")
 write_csv(dat, "data/pp_h.csv")
 
+# ezknitr::ezspin("R/pp.R", out_dir = "reports/", keep_html = FALSE)
