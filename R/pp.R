@@ -4,6 +4,7 @@
 # DESCRIPTION:  Calculate PP based on P vs I curves.
 # <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
+#' Last updated: `r Sys.time()`
 
 #' ## Open the PS file and do some cleaning
 ps <- readxl::read_excel("data/pp/Global_PS_for_Takuvik.xlsx") %>% 
