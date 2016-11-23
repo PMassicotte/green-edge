@@ -1,6 +1,6 @@
 #' Extract SST from a netCDF file
 #'
-#' @param file Full filepath of the netCDF file.
+#' @param file Full path of the netCDF file.
 #'
 #' @return
 #' @export
