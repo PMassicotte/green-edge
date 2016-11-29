@@ -6,7 +6,6 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 - [Green Edge missions](#green-edge)
 - [State of the atmosphere](reports/soa.md)
-- [Primary production](reports/pp.md)
 
 ## Green Edge
 
