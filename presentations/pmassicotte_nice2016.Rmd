@@ -1,0 +1,69 @@
+---
+title: "GreenEdge meeting"
+subtitle: "Nice, 2016-12-13"
+author: "Philippe Massicotte"
+output:
+  revealjs::revealjs_presentation:
+    theme: moon
+    css: styles.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+<center>
+<img src="myfigs/hello_my_name.png" width="800"/>
+</center>
+
+**Mail:** **[philippe.massicotte@takuvik.ulaval.ca](philippe.massicotte@takuvik.ulaval.ca)**
+
+**Github page:** **[https://github.com/PMassicotte](https://github.com/PMassicotte)**
+
+## GreenEdge physics paper
+
+For a total of 194 sampling days!
+
+## Atmosphere and ice
+
+Data available daily:
+
+- Cloud optical thickness (MODIS L3, resolution: 1 x 1 degree)
+- Cloud fraction (MODIS L3, resolution: 1 x 1 degree)
+- SST (AVHRR, resolution: 0.25 x 0.25 degree)
+- Sea ice extent (NSIDC, resolution: 1 km)
+- Sea ice concentration (AMSR2, resolution: 3.125 km)
+- Windspeed (CCMP, resolution: 0.25 x 0.25 degree)
+
+## Example: SST
+
+![](/home/pmassicotte/Desktop/animation/animated.gif)
+
+## Example: Wind speed
+
+<img src="../graphs/windspeed.png" width="800"/>
+
+## 360 degrees ice-cam
+
+12 images taken simultaneously every 5 minutes
+
+![](../data/ice-cam/Camera360_20160611134049_mosaic.jpg)
+
+## Panorama
+
+![](../data/ice-cam/Camera360_20160611134049_panorama.jpg)
+
+Panoramas: thanks to Simon Morisset (ULAVAL)
+
+## A bit of geometry
+
+<img src="../graphs/ice_cover1.png" width="800"/>
+
+## Ice detection
+
+<img src="../graphs/ice_cover2.png" width="800"/>
+
+## Whats next?
+
+- How do we integrate extracted data to the physic paper? 
+- Better algorithm for ice detection (help?)
