@@ -5,7 +5,7 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 ### Table of contents
 
 - [Green Edge missions](#green-edge)
-- [State of the atmosphere](reports/soa.md)
+- [State of the atmosphere](reports/state_of_atmosphere.md)
 
 ## Green Edge
 
