@@ -5,6 +5,22 @@
   font-style: normal;
 }
 
+.parent {
+  width: 800px;
+  align-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+ /* position: absolute;*/
+  margin: auto;
+}
+
 body {
     background-image: url(background/fond-niveau2b.jpg);
     background-size: cover;
@@ -43,12 +59,12 @@ a:active {
 }
 
 .reveal h3 {
-  font-size: 0.85em;
+  font-size: 1.25em;
   text-align: left;
   font-family: 'myfont';
-  font-style: normal;
+  font-weight: bolder;
 	font-variant: normal;
-	font-weight: 500;
+	font-weight: 700;
 	text-transform: none !important;
 	color: #141614;
 }
@@ -64,6 +80,7 @@ a:active {
 .reveal li {
   color: #32302d;
   font-family: 'myfont';
+  text-align: left;
 }
 
 .reveal strong { color: #32302d; }
@@ -75,4 +92,8 @@ a:active {
 blockquote p {
   display: inline;
   color: #EFEFEF;
+}
+
+table {
+  color: #32302d;
 }
