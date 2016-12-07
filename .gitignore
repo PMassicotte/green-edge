@@ -38,3 +38,6 @@ graphs/
 
 # HTML generated presentations
 /presentations/*.html
+
+# Do not update data, files are too big
+/data/
