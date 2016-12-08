@@ -7,6 +7,7 @@ output:
     theme: moon
     css: styles.css
     incremental: false
+    highlight: tango
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +15,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 <center>
-<img src="myfigs/hello_my_name.png" width="600"/>
+<img src="myfigs/hello_my_name.png" style="width:640px !important;"/>
 </center>
 
 **Mail:** [philippe.massicotte@takuvik.ulaval.ca](philippe.massicotte@takuvik.ulaval.ca)
@@ -25,7 +26,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ### Physical paper
 
-Working title: **Upper ocean physics of Baffin Bay marginal ice zone**
+Working title: **Upper ocean physics of Baffin Bay marginal ice zone** <small>(Dumont, Houssais, Sévigny, Massicotte, Vladoiu, Bouruet-Aubertot, Rehm)</small>
 
 ### Tasks
 
@@ -42,9 +43,9 @@ Working title: **Upper ocean physics of Baffin Bay marginal ice zone**
 - Sea ice concentration (AMSR2, resolution: 3.125 km)
 - Windspeed (CCMP, resolution: 0.25 x 0.25 degree)
 
-## Example: SST
+## Example: Ice extent
 
-![](/home/pmassicotte/Desktop/animation/animated.gif)
+![](../graphs/animation/animated.gif)
 
 ## Example: Wind speed
 
@@ -52,7 +53,9 @@ Working title: **Upper ocean physics of Baffin Bay marginal ice zone**
 
 ## Data exploitation
 
-All the data has been processed in a way to make it rapidly exploitable.
+- Different file formats (netCDF, HDF4, HDF5, etc.).
+- Different ways to represent geographical coordinates (mapped, L3BIN, etc.).
+- Processed in a way to make it rapidly exploitable (R, Matlab).
 
 ```{r}
 library(ncdf4)
@@ -77,17 +80,50 @@ knitr::kable(head(df))
 
 ```
 
+```{r, echo = TRUE, eval = FALSE}
+source("download_data.R")
+```
+
+
 ## 360 degrees ice-cam
 
-12 images taken simultaneously every 5 minutes
+> The Canadian research icebreaker CCGS Amundsen is equipped with a numeric
+photography system which covers the sea surface at 360° around the vessel. His purpose
+is to estimate the sea ice coverage, his appearance and his distribution within a radius of
+~250 meters.
+
+## 360 degrees ice-cam
+
+<center>
+<div class="parent">
+  <img width="400" height="400" src="myfigs/Camera_360_report_2015a.jpg" align="middle">
+  <em><small>The Arecont camera (model AV20185 IP camera)</small></em>
+</div>
+</center>
+
+## 360 degrees ice-cam
+
+<center>
+<div class="parent">
+  <img width="400" height="400" src="myfigs/Camera_360_report_2015b.jpg" align="middle">
+  <em><small>The Arecont camera (model AV20185 IP camera)</small></em>
+</div>
+</center>
+
+## 360 degrees ice-cam
+
+12 images taken simultaneously every 5 minutes from the Amundsen
 
 ![](../data/ice-cam/Camera360_20160611134049_mosaic.jpg)
 
 ## Panorama
 
 ![](../data/ice-cam/Camera360_20160611134049_panorama.jpg)
+<em><small>Panoramas: thanks to Simon Morisset (ULAVAL)</small></em>
 
-Panoramas: thanks to Simon Morisset (ULAVAL)
+**Dimensions:** 950 x 13304 pixels (*n* = 12 638 800)
+
+**Spatial resolution:** ~45 cm
 
 ## Spatial projection
 
@@ -105,11 +141,27 @@ Panoramas: thanks to Simon Morisset (ULAVAL)
 </div>
 </center>
 
+## 360 degrees ice-cam
+
+Each image is georeferenced
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+source("../R/ice_cam_functions.R")
+df <- read_parameter("../data/ice-cam/Camera360_20160611134049_header.txt") %>% 
+  gather(parameter, value)
+
+knitr::kable(head(df, 11))
+```
+
+## 360 degrees ice-cam
+
+### Map of available observations
+
 ## Whats next?
 
-- How do we exploit the extracted data to the physic paper?
+- How do we want to exploit the extracted data in the physic paper?
 - Better algorithm for ice detection (help?)
 - Contributions are welcome (https://github.com/PMassicotte/green-edge)
 
 ## Thank you
-

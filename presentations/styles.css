@@ -10,15 +10,18 @@
   align-content: center;
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+  /*box-shadow: 10px 10px 5px grey;*/
+  border: 0;
 }
 
 img {
   display: block;
-  width: 100%;
-  height: auto;
- /* position: absolute;*/
+  width: 100% !important;
+  height: auto !important;
+  /*box-shadow: 10px 10px 12px #555;*/
   margin: auto;
+  border: 0;
 }
 
 body {
@@ -88,11 +91,12 @@ a:active {
 .refsection p { font-size: 0.5em; }
 
 .reveal figcaption{font-size:0.75em;}
-
+/*
 blockquote p {
   display: inline;
-  color: #EFEFEF;
-}
+  color: #32302d;
+  background-color: rgb(177, 177, 177);
+}*/
 
 table {
   color: #32302d;
