@@ -24,4 +24,4 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 - Ice history (24h?)
 - Identification of melt ponds
 - Image classification using RandomForest or supervised classification
-- For each station, extract the ice concentration for the whole mission. Each station will have a time series of ice condition.
+- For each station, extract the ice concentration for the whole mission. Each station will have a time series of ice condition (Flavienne).
