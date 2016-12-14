@@ -23,3 +23,4 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 - Ice history (24h?)
 - Identification of melt ponds
+- Image classification using RandomForest or supervised classification
