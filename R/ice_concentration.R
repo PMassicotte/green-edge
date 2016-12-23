@@ -69,6 +69,7 @@ amundsen <- readxl::read_excel("data/GE_Amundsen_Station_Coordinates.xlsx") %>%
   janitor::clean_names() %>% 
   dplyr::select(cruise,
                 code_operation,
+                
                 date_utc,
                 lat = lat_deg_n,
                 lon = long_deg_w,
@@ -87,26 +88,42 @@ res <- lapply(files, extract_sic, lon = lon, lat = lat, amundsen = amundsen, pro
   as_tibble() %>% 
   dplyr::select(-coords.x1, -coords.x2)
 
-write_csv(res, "data/clean/ice_history.csv")
+# *************************************************************************
+# Format the data so it fits with what Flavienne asked.
+# *************************************************************************
+
+final <- res %>% 
+  mutate(lon = -lon) %>% 
+  dplyr::select(cruise, 
+         code_operation, 
+         date_utc,
+         lat_deg_n = lat,
+         long_deg_w = lon,
+         station,
+         station_type,
+         ice_date,
+         sic = sic)
+
+write_csv(final, "data/clean/ice_history.csv")
 
 
 ## TEST
 
-rm(list = ls())
-
-df <- read_csv("data/clean/ice_history.csv")
-
-unique(df$station)
-
-
-df %>% 
-  filter(station %in% c("Crossby", "G713", "DIC1")) %>% 
-  ggplot(aes(x = ice_date, y = sic, color = station)) +
-  geom_point() +
-  geom_line() +
-  theme(legend.justification = c(0, 0), legend.position = c(0.01, 0.01)) +
-  scale_x_date(date_labels = "%d-%b-%Y") +
-  xlab("Date") +
-  ylab("Sea ice concentration (%)")
-
-ggsave("graphs/sea_ice_concentration.pdf")
+# rm(list = ls())
+# 
+# df <- read_csv("data/clean/ice_history.csv")
+# 
+# unique(df$station)
+# 
+# 
+# df %>% 
+#   filter(station %in% c("Crossby", "G713", "DIC1")) %>% 
+#   ggplot(aes(x = ice_date, y = sic, color = station)) +
+#   geom_point() +
+#   geom_line() +
+#   theme(legend.justification = c(0, 0), legend.position = c(0.01, 0.01)) +
+#   scale_x_date(date_labels = "%d-%b-%Y") +
+#   xlab("Date") +
+#   ylab("Sea ice concentration (%)")
+# 
+# ggsave("graphs/sea_ice_concentration.pdf")

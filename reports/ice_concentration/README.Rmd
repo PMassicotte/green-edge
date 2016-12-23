@@ -27,18 +27,11 @@ This document presents an overview of the methodology used to extract the histor
 
 ## Data
 
-Sea ice concentration has been extracted from AMSR2 radiometer on a 3.125 km grid. At each Amundsen station, the historic of sea ice concentration was extracted between 2016-03-01 and 2016-07-14. Sea ice concentration was extracted form the closest pixel using the Eucledian distance between ship position and the center of each pixel. The following graph presents the distribution of the distance between the ship and the center of the closest pixel.
-
-```{r, echo = FALSE, fig.align='center'}
-df %>% 
-  ggplot(aes(x = distance_to_pixel)) +
-  geom_histogram(binwidth = 100) +
-  xlab("Distance to the closest pixel (meters)")
-```
+Sea ice concentration has been extracted from AMSR2 radiometer on a 3.125 km grid. At each Amundsen station, the historic of sea ice concentration was extracted between 2016-03-01 and 2016-07-14. Sea ice concentration was extracted form the closest pixel using the Eucledian distance between ship position and the center of each pixel.
 
 ## Example
 
-This is an example for station `G104`.
+This is an example for station **G104**.
 
 ```{r, echo = FALSE, fig.align='center'}
 df %>% 
