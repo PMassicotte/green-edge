@@ -6,6 +6,7 @@ This is the repository for the Green Edge project (http://www.greenedgeproject.i
 
 - [Green Edge missions](#green-edge)
 - [State of the atmosphere](reports/state_of_atmosphere.md)
+- [Sea ice concentration](reports/ice_concentration/README.pdf)
 - [Things to do](#todo)
 
 ## Green Edge
