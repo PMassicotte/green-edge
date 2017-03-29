@@ -224,6 +224,8 @@ pmap(list(df$data, df$model, df$date, df$depth_m, df$model_type) , plot_curve)
 dev.off()
 
 
-df %>% 
+params <- df %>% 
   mutate(coef = purrr::map(model, broom::tidy)) %>% 
   unnest(coef)
+
+write.csv(params, "data/pe-curves//Photosynthetic_parameters.csv")
