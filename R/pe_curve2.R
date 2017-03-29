@@ -226,6 +226,10 @@ dev.off()
 
 params <- df %>% 
   mutate(coef = purrr::map(model, broom::tidy)) %>% 
-  unnest(coef)
+  unnest(coef) %>% 
+  dplyr::select(date:estimate) %>% 
+  spread(term, estimate) %>% 
+  mutate(pm = ps * (alpha / (alpha + beta)) * (beta / (alpha + beta)) ^ (beta / alpha)) %>% 
+  mutate(ek = pm / alpha)
 
-write.csv(params, "data/pe-curves//Photosynthetic_parameters.csv")
+# write.csv(params, "data/pe-curves//Photosynthetic_parameters.csv")
