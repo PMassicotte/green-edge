@@ -21,8 +21,8 @@ process_dpm <- function(df, volume_incubation, volume_pipette_tc) {
   
 }
 
-file <- "data/pe-curves/GE2015-PvsE-Takuvik_14C_dpm_20170302.xlsx"
-# file <- "data/pe-curves/GE2016-PvsE_DPM.xlsx"
+# file <- "data/pe-curves/GE2015-PvsE-Takuvik_14C_dpm_20170302.xlsx"
+file <- "data/pe-curves/GE2016-PvsE_DPM_final.xlsx"
 
 df <- read_excel(
   file,
@@ -77,47 +77,64 @@ df <- df %>%
 # Fit the data
 # ****************************************************************************
 
-fit_pe <- function(df) {
+fit_pe <- function(df, model_type) {
+  
+  # print(model_type)
   
   mod <- NA
   
   opt <- nls.control(maxiter = 400, minFactor = 1e-10, tol = 1e-10)
   
-  mynls <- safely(minpack.lm::nlsLM)
+  safe_nls <- safely(minpack.lm::nlsLM)
   
-  if (unique(df$model_type) == "model1") {
+  if (model_type == "model1") {
     
-    mod <- mynls(
+    mod <- safe_nls(
       p_manip ~
         ps * (1 - exp(-alpha * light / ps)) * exp(-beta * light / ps) + p0,
       data = df,
       start = list(
         ps = max(df$p_manip, na.rm = TRUE),
         alpha = 0,
-        beta = 0,
-        p0 = 0.1
+        beta = 0.000001,
+        p0 = 0
       ),
       lower = c(
-        ps =  0,
+        ps =  min(df$p_manip, na.rm = TRUE),
         alpha = 0,
         beta = 0,
         p0 = -Inf
       ),
+      upper = c(
+        ps =  10,
+        alpha = Inf,
+        beta = Inf,
+        p0 = Inf
+      ),
       control = opt
     )
     
-  } else if (unique(df$model_type) == "model2") {
+  } else if (model_type == "model2") {
     
-    mod <- mynls(
+    mod <- safe_nls(
       p_manip ~
         ps * (1 - exp(-alpha * light / ps)) + p0,
       data = df,
       start = list(
-        ps = 3,
+        ps = 2,
         alpha = 0.01,
         p0 = 0.01
       ),
-      lower = c(0, 1e-7, -Inf),
+      lower = c(
+        ps = min(df$p_manip, na.rm = TRUE),
+        alpha = 0,
+        p0 = -Inf
+      ), 
+      upper = c(
+        ps = Inf,
+        alpha = Inf,
+        p0 = Inf
+      ),
       control = opt
     )
     
@@ -127,10 +144,11 @@ fit_pe <- function(df) {
   
 }
 
+
 df <- df %>% 
-  group_by(date, depth_m) %>% 
+  group_by(date, depth_m, model_type) %>% 
   nest() %>% 
-  mutate(model = purrr::map(data, fit_pe)) 
+  mutate(model = purrr::map2(data, model_type, fit_pe)) 
 
 # pred <- df %>% 
 #   mutate(is_fitted = purrr::map(model, function(x) {!is.null(x)} )) %>% 
@@ -141,7 +159,21 @@ df <- df %>%
 # ****************************************************************************
 # Plot the data
 # ****************************************************************************
-plot_curve <- function(df, model, date, depth) {
+plot_curve <- function(df, model, date, depth, model_type) {
+  
+  df <- df %>% 
+    mutate(model_type = model_type)
+  
+  # mod2 <- phytotools::fitPGH(df$light, df$p_manip)
+  # print(mod2)
+  
+  alpha <- coef(model)["alpha"]
+  p0 <- coef(model)["p0"]
+  ps <- coef(model)["ps"]
+  beta <- coef(model)["beta"]
+  
+  pm <- ps * (alpha / (alpha + beta)) * (beta / (alpha + beta)) ^ (beta / alpha)
+  ek <- pm / alpha
   
   p <- df %>% 
     ggplot(aes(x = light, y = p_manip)) +
@@ -149,16 +181,37 @@ plot_curve <- function(df, model, date, depth) {
     ggtitle(paste("Date:", format(as.Date(date, origin = "1970-01-01"), "%Y-%j"), "Depth:", depth)) +
     xlab("Light intensity") +
     ylab("Primary production") +
-    ggrepel::geom_text_repel(aes(label = id), size = 2)
+    ggrepel::geom_text_repel(aes(label = id), size = 2) +
+    labs(subtitle = "")  +
+    scale_x_continuous(limits = c(0, NA)) +
+    scale_y_continuous(limits = c(0, NA))
   
   
   if (!is.null(model)) {
     
-    df <- modelr::add_predictions(df, model)
+    pred <- df %>% 
+      modelr::data_grid(light = modelr::seq_range(light, 100)) %>% 
+      modelr::add_predictions(., model)  
+    
+    # df <- modelr::add_predictions(df, model)
+    
+    lab <- paste(strwrap(paste0(
+      "alpha = ", signif(coef(model)["alpha"], 3), "; ",
+      "beta = ", signif(coef(model)["beta"], 3), "; ",
+      "p0 = ", signif(coef(model)["p0"], 3), "; ",
+      "ps = ", signif(coef(model)["ps"], 3), "; ",
+      "pm = ", signif(pm, 3), "; ",
+      "ek = ", signif(ek, 3),
+      collapse = "\n"), 60), collapse = "\n")
     
     p <- p + 
-      geom_line(data = df, aes(x = light, y = pred, color = model_type)) +
-      theme(legend.position = c(1, 0), legend.justification = c(1.1, -0.5))
+      geom_line(data = pred, aes(x = light, y = pred, color = model_type)) +
+      theme(legend.position = c(1, 0), legend.justification = c(1.1, -0.5)) +
+      labs(subtitle = lab) +
+      geom_abline(slope = alpha, intercept = p0, color = "blue", lwd = 0.25, lty = 2) +
+      geom_hline(yintercept = p0, color = "blue", lwd = 0.25, lty = 2) +
+      geom_hline(yintercept = pm + p0, color = "blue", lwd = 0.25, lty = 2) +
+      geom_vline(xintercept = ek, color = "blue", lwd = 0.25, lty = 2) 
   }
   
   return(p)
@@ -166,7 +219,7 @@ plot_curve <- function(df, model, date, depth) {
 
 pdf("graphs/pe-curves/ge2016.pdf", width = 5, height = 4)
 
-pmap(list(df$data, df$model, df$date, df$depth_m) , plot_curve)
+pmap(list(df$data, df$model, df$date, df$depth_m, df$model_type) , plot_curve)
 
 dev.off()
 

@@ -1,4 +1,5 @@
 library(tidyverse)
+library(readxl)
 library(extrafont)
 library(rgdal)
 library(RCurl)
@@ -6,6 +7,9 @@ library(ncdf4)
 library(viridis)
 library(MODIS) # devtools::install_github("MatMatt/MODIS")
 library(feather)
+library(sp)
+library(sf)
+library(stringr)
 
 ## Clear the workspace
 rm(list = ls())
