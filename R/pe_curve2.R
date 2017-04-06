@@ -1,5 +1,54 @@
 rm(list = ls())
 
+
+calculate_metrics <- function(mod) {
+  
+  if (is.null(mod)) {
+    return(data.frame(
+      ps = NA,
+      alpha = NA,
+      beta = NA,
+      p0 = NA,
+      pm = NA,
+      ek = NA,
+      rss = NA,
+      r2 = NA
+    ))
+  }
+  
+  ps <- coef(mod)["ps"]
+  alpha <- coef(mod)["alpha"]
+  beta <- coef(mod)["beta"]
+  p0 <- coef(mod)["p0"]
+  
+  rss <- sum(residuals(mod) ^ 2)
+  
+  ## Calculate the pseudo-R2
+  y <- mod$m$lhs()
+  yy <- fitted(mod)
+  r2 <- 1 - sum((y - yy) ^ 2) / (length(y) * var(y))
+  
+  ## Extra parameters (from the Excel sheet I was given)
+  pm <- ps * (alpha / (alpha + beta)) * (beta / (alpha + beta)) ^ (beta / alpha)
+  ek <- pm / alpha
+  
+  im <- ps / alpha * log(exp((alpha + beta) / beta))
+  ib <- ps  / beta
+  
+  ## Normalize
+  # alpha_b <- alpha / unique(data$chloro)
+  # beta_b <- beta / unique(data$chloro)
+  # pb_max <- pm / unique(data$chloro)
+  
+  ## Return the data
+  # df <- data.frame(ps, alpha, beta, p0, pm, ek, alpha_b, beta_b, pb_max, rss, r2)
+  
+  df <- data.frame(ps, alpha, beta, p0, pm, ek, im, ib, rss, r2)
+  
+  return(df)
+}
+
+
 sal_to_dic <- function(salinity) {
   return(((salinity * 0.067) - 0.05) * 0.96 * 12000)
 }
@@ -217,19 +266,15 @@ plot_curve <- function(df, model, date, depth, model_type) {
   return(p)
 }
 
-pdf("graphs/pe-curves/ge2016.pdf", width = 5, height = 4)
 
-pmap(list(df$data, df$model, df$date, df$depth_m, df$model_type) , plot_curve)
-
-dev.off()
-
+# pdf("graphs/pe-curves/ge2016.pdf", width = 5, height = 4)
+# 
+# pmap(list(df$data, df$model, df$date, df$depth_m, df$model_type) , plot_curve)
+# 
+# dev.off()
 
 params <- df %>% 
-  mutate(coef = purrr::map(model, broom::tidy)) %>% 
-  unnest(coef) %>% 
-  dplyr::select(date:estimate) %>% 
-  spread(term, estimate) %>% 
-  mutate(pm = ps * (alpha / (alpha + beta)) * (beta / (alpha + beta)) ^ (beta / alpha)) %>% 
-  mutate(ek = pm / alpha)
+  mutate(params = purrr::map(model, calculate_metrics)) %>% 
+  unnest(params)
 
 # write.csv(params, "data/pe-curves//Photosynthetic_parameters.csv")
