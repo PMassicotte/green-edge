@@ -23,7 +23,7 @@ calculate_metrics <- function(mod, data) {
     )
   }
   
-  chla <- ifelse(is.na(unique(data$chla_hplc_x)), data$chla_fluo_y, data$chla_hplc_x)
+  chla <- ifelse(is.na(unique(data$chla_hplc)), data$chla_fluo, data$chla_hplc)
   
   ps <- coef(mod)["ps"]
   alpha <- coef(mod)["alpha"]
@@ -100,8 +100,8 @@ df <- read_excel(
                 dpm1,
                 light,
                 salinity,
-                chla_hplc_x,
-                chla_fluo_y) %>%
+                chla_hplc,
+                chla_fluo) %>%
   mutate(time = parse_number(time)) %>%
   drop_na(dpm1)
 
