@@ -275,6 +275,7 @@ plot_curve <- function(df, model, date, depth, model_type) {
 
 params <- df %>% 
   mutate(params = purrr::map(model, calculate_metrics)) %>% 
-  unnest(params)
+  unnest(params) %>% 
+  dplyr::select(-data, -model)
 
 # write.csv(params, "data/pe-curves//Photosynthetic_parameters.csv")
