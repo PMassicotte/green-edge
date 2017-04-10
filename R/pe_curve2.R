@@ -1,20 +1,29 @@
 rm(list = ls())
 
 
-calculate_metrics <- function(mod) {
+calculate_metrics <- function(mod, data) {
   
   if (is.null(mod)) {
-    return(data.frame(
-      ps = NA,
-      alpha = NA,
-      beta = NA,
-      p0 = NA,
-      pm = NA,
-      ek = NA,
-      rss = NA,
-      r2 = NA
-    ))
+    return(
+      data.frame(
+        ps = NA,
+        alpha = NA,
+        beta = NA,
+        p0 = NA,
+        pm = NA,
+        ek = NA,
+        im = NA,
+        ib = NA,
+        alpha_b = NA,
+        beta_b = NA,
+        pb_max = NA,
+        rss = NA,
+        r2 = NA
+      )
+    )
   }
+  
+  chla <- ifelse(is.na(unique(data$chla_hplc_x)), data$chla_fluo_y, data$chla_hplc_x)
   
   ps <- coef(mod)["ps"]
   alpha <- coef(mod)["alpha"]
@@ -36,14 +45,14 @@ calculate_metrics <- function(mod) {
   ib <- ps  / beta
   
   ## Normalize
-  # alpha_b <- alpha / unique(data$chloro)
-  # beta_b <- beta / unique(data$chloro)
-  # pb_max <- pm / unique(data$chloro)
+  alpha_b <- alpha / chla
+  beta_b <- beta / chla
+  pb_max <- pm / chla
   
   ## Return the data
   # df <- data.frame(ps, alpha, beta, p0, pm, ek, alpha_b, beta_b, pb_max, rss, r2)
   
-  df <- data.frame(ps, alpha, beta, p0, pm, ek, im, ib, rss, r2)
+  df <- data.frame(ps, alpha, beta, p0, pm, ek, im, ib, alpha_b, beta_b, pb_max, rss, r2)
   
   return(df)
 }
@@ -71,7 +80,7 @@ process_dpm <- function(df, volume_incubation, volume_pipette_tc) {
 }
 
 # file <- "data/pe-curves/GE2015-PvsE-Takuvik_14C_dpm_20170302.xlsx"
-file <- "data/pe-curves/GE2016-PvsE_DPM_final.xlsx"
+file <- "data/pe-curves/GE2016-PvsE_DPM_20170328.xlsx"
 
 df <- read_excel(
   file,
@@ -90,7 +99,9 @@ df <- read_excel(
                 incub_time = incu_time_min,
                 dpm1,
                 light,
-                salinity) %>%
+                salinity,
+                chla_hplc_x,
+                chla_fluo_y) %>%
   mutate(time = parse_number(time)) %>%
   drop_na(dpm1)
 
@@ -274,7 +285,7 @@ plot_curve <- function(df, model, date, depth, model_type) {
 # dev.off()
 
 params <- df %>% 
-  mutate(params = purrr::map(model, calculate_metrics)) %>% 
+  mutate(params = purrr::map2(model, data, calculate_metrics)) %>% 
   unnest(params) %>% 
   dplyr::select(-data, -model)
 
