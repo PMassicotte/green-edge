@@ -1,4 +1,9 @@
-
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>  
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Take a file generated for calculating primary production and
+#               convert it to Excel.
+# <><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 
 library(tidyverse)
 library(xlsx)
