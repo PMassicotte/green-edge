@@ -17,11 +17,13 @@ export_excel <- function(file, overwrite = FALSE) {
   }
   
   df <- suppressWarnings(suppressMessages(read_csv(file, skip = 5, na = c("", "*****")))) %>% 
-    janitor::clean_names()
-  
-  
+    janitor::clean_names() %>% 
+    mutate(sample_id = NA) %>% 
+    mutate(measurement_type = NA) %>% 
+    mutate(light = NA) %>% 
+    mutate(dic = NA)
+    
   write.xlsx(as.data.frame(df), file = destfile, sheetName = basename(file), showNA = FALSE, row.names = FALSE)
-  
   
 }
 
