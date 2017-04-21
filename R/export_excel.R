@@ -39,8 +39,8 @@ export_excel <- function(file, overwrite = FALSE) {
 
 pvse_config_file <- function(dir, overwrite = FALSE) {
   
-  if (dir.exists(dir) & overwrite == FALSE) {
-    stop("File already exsists. Use overwrite = TRUE to force it.")
+  if (!dir.exists(dir)) {
+    stop("Directory does not exists. Specify a valide one.")
   }
   
   df <- data_frame(
@@ -54,6 +54,11 @@ pvse_config_file <- function(dir, overwrite = FALSE) {
   )
   
   destfile <- paste0(dir, "/config_pvse_input.xlsx")
+  
+  if (file.exists(destfile) & overwrite == FALSE) {
+    stop("File already exsists. Use overwrite = TRUE to force it.")
+  }
+  
   write.xlsx(as.data.frame(df), file = destfile, sheetName = "sheet1", showNA = FALSE, row.names = FALSE)
   
 }
