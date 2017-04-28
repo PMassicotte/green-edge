@@ -6,16 +6,84 @@
 
 rm(list = ls())
 
-# *************************************************************************
-# Projections
-# *************************************************************************
+library(raster)
 
-proj <- "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
-area <- readOGR("data/shapefiles/", "area_of_interest")
 
-# *************************************************************************
-# Amundsen geographical positions
-# *************************************************************************
+extract_wind_speed <- function(file, proj, amundsen) {
+  
+
+  uwnd <- raster::brick(file, var = "uwnd") %>% 
+    rasterToPoints() %>% 
+    as_data_frame() %>% 
+    rename(lon = x, lat = y) %>% 
+    mutate(lon = ifelse(lon > 180, lon - 360, lon)) %>%
+    filter(lat >= 45) %>% 
+    filter(lon >= -90 & lon <= -40) %>% 
+    rasterFromXYZ(crs = CRS(proj)) 
+  
+  vwnd <- raster::brick(file, var = "vwnd") %>% 
+    rasterToPoints() %>% 
+    as_data_frame() %>% 
+    rename(lon = x, lat = y) %>% 
+    mutate(lon = ifelse(lon > 180, lon - 360, lon)) %>%
+    filter(lat >= 45) %>% 
+    filter(lon >= -90 & lon <= -40) %>% 
+    rasterFromXYZ(crs = CRS(proj)) 
+  
+  uwnd <- extract(uwnd, amundsen_sp) %>% 
+    as_data_frame() %>% 
+    bind_cols(amundsen) %>% 
+    gather(wind_date, uwnd, starts_with("X")) %>% 
+    mutate(wind_date = str_sub(wind_date, 2, -1)) %>% 
+    mutate(wind_date = anytime::anytime(wind_date))
+  
+  vwnd <- extract(vwnd, amundsen_sp) %>% 
+    as_data_frame() %>% 
+    bind_cols(amundsen) %>% 
+    gather(wind_date, vwnd, starts_with("X")) %>% 
+    mutate(wind_date = str_sub(wind_date, 2, -1)) %>% 
+    mutate(wind_date = anytime::anytime(wind_date))
+  
+  df <-
+    inner_join(
+      uwnd,
+      vwnd,
+      by = c(
+        "cruise",
+        "code_operation",
+        "date_utc",
+        "lat",
+        "lon",
+        "station",
+        "station_type",
+        "wind_date"
+      )) %>% 
+    mutate(speed = sqrt(uwnd ^ 2 + vwnd ^ 2))
+  
+  return(df)
+  
+}
+
+download_wind <- function(date) {
+  
+  file <- sprintf(
+    "ftp://ftp2.remss.com/ccmp/v02.0/Y2016/M05/CCMP_Wind_Analysis_%s_V02.0_L3.0_RSS.nc",
+    format(date, "%Y%m%d")
+  )
+  
+  tf <- paste0(tempdir(), "/", basename(file))
+  
+  file <- curl::curl_download(file, tf)
+  
+  return(file)
+  
+}
+
+proj <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0"
+
+curl::curl_download("http://www.obs-vlfr.fr/proof/php/GREENEDGE/docs/GE_Amundsen_Station_Coordinates.xlsx",
+                    "data/GE_Amundsen_Station_Coordinates.xlsx")
+
 amundsen <- readxl::read_excel("data/GE_Amundsen_Station_Coordinates.xlsx") %>% 
   janitor::clean_names() %>% 
   dplyr::select(cruise,
@@ -27,13 +95,32 @@ amundsen <- readxl::read_excel("data/GE_Amundsen_Station_Coordinates.xlsx") %>%
                 station,
                 station_type) %>% 
   mutate(date_utc = as.Date(date_utc, format = "%d-%b-%Y")) %>% 
-  mutate(lon = -lon) %>% 
-  filter(lat >= 65) %>% 
-  SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj4string(area))) 
+  mutate(lon = -lon)
 
-extract_ws <- function(file) {
-  
-  ex <- extent(amundsen)
+amundsen_sp <- amundsen %>%  
+  SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj)) 
+
+# ****************************************************************************
+# download all the data
+# ****************************************************************************
+
+date <- seq(as.Date("2016-05-01"), as.Date("2016-05-30"), by = 1)
+
+file <- lapply(date, download_wind)
+
+# ****************************************************************************
+# Extract the data
+# ****************************************************************************
+
+res <- lapply(file, extract_wind_speed, proj = proj, amundsen = amundsen) %>% 
+  bind_rows()
+
+write_csv(res, "data/clean/wind_speed.csv")
+
+
+# maps --------------------------------------------------------------------
+
+plot_wind_speed <- function(file) {
   
   ws <- ncdf4::nc_open(file)
   
@@ -51,48 +138,31 @@ extract_ws <- function(file) {
     u = as.vector(uwnd[, , 1]),
     v = as.vector(vwnd[, , 1])
   ) %>%
-    mutate(speed = sqrt(u ^ 2 + v ^ 2)) %>% 
-    # mutate(direction = atan2(u / speed, v / speed )) %>% 
-    # mutate(direction = direction * 180 / pi) %>% 
-    mutate(lon = ifelse(lon > 180, lon - 360, lon)) %>%
-    filter(lon >= ex@xmin & lon <= ex@xmax) %>%
-    filter(lat >= ex@ymin & lat <= ex@ymax) %>%
-    SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj4string(area))) %>% 
-    spTransform(proj)
+    mutate(speed = sqrt(u ^ 2 + v ^ 2)) %>%
+    mutate(lon = ifelse(lon > 180, lon - 360, lon)) 
   
-  snap <- apply(spDists(amundsen %>% spTransform(proj), df), 1, function(x) {
-    data_frame(distance_to_pixel = min(x),
-               which_min = which.min(x))
-  }) %>%
-    bind_rows()
+  date <- paste(as.Date(str_extract(file, "\\d{8}"), format = "%Y%m%d"), "00:00:00")
   
-  df <- data.frame(df) %>% 
-    dplyr::select(
-      lon_wind = lon, 
-      lat_wind = lat,
-      u,
-      v,
-      speed)
+  map <- ggplot2::map_data(map = "world")
   
-  res <- data.frame(amundsen) %>% 
-    bind_cols(df[snap$which_min, ]) %>% 
-    bind_cols(snap)
+  p <- df %>%
+    as.data.frame() %>%
+    ggplot(aes(x = lon, y = lat, fill = speed)) +
+    geom_raster() +
+    geom_path(data = map, aes(x = long, y = lat, group = group), inherit.aes = FALSE, color = "gray75", size = 0.1) +
+    viridis::scale_fill_viridis() +
+    coord_fixed(expand = FALSE, xlim = c(-80, -25), ylim = c(45, 78), ratio = 1) +
+    labs(title = date) +
+    xlab("Longitude") +
+    ylab("Latitude") +
+    labs(fill = bquote(atop(Wind~speed, "("*m%*%s^{-1}*")")))
   
-  return(res)
-  
+  fn <- paste0("graphs/wind_speed/", as.Date(date), ".pdf")
+  ggsave(fn, p)
   
 }
 
-file <- "data/wind_speed/M03/CCMP_Wind_Analysis_20160301_V02.0_L3.0_RSS.nc"
+lapply(file, plot_wind_speed)
 
-df <- extract_ws(file)
 
-df %>% 
-  ggplot(aes(x = lon, y = lat)) +
-  geom_point(aes(color = "station")) +
-  ggrepel::geom_text_repel(aes(label = station)) +
-  geom_point(aes(x = lon_wind, y = lat_wind, color = "wind observation"))
 
-df %>% 
-  ggplot(aes(x = distance_to_pixel / 1000)) +
-  geom_histogram(binwidth = 0.25)
