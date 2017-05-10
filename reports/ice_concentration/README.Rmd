@@ -69,6 +69,15 @@ df2 %>%
 
 ```
 
+## Other sources of data
+
+The infamous "ice line" is also available on our glider's webpage. For every day since the beginning of March 2016, you will find the "arctic_line_yyyyddd.kmz" file there, however these data cover the entire arctic area so some modifications might be necessary:
+
+http://gliders.takuvik.ulaval.ca/kmz/archive/
+
+Another source of sea ice line data is the NOAA website. Data @NatIce are available in kmz, text and shapefiles format. These files are GIS so they are meant to be read by a GIS software: 
+
+http://www.natice.noaa.gov/products/daily_products.html
 
 ## How to cite the data
 
