@@ -28,7 +28,9 @@ This document presents an overview of the methodology used to extract the histor
 
 ## Data
 
-Sea ice concentration has been extracted from AMSR2 radiometer on a 3.125 km grid. At each Amundsen station, the historic of sea ice concentration was extracted between 2016-03-01 and 2016-07-14. Sea ice concentration was extracted form the closest pixel using the Eucledian distance between ship position and the center of each pixel.
+Sea ice concentration has been extracted from AMSR2 radiometer on a 3.125 km grid. At each Amundsen station, the historic of sea ice concentration was extracted between 2016-03-01 and 2016-07-14. Sea ice concentration was extracted from the closest pixel using the Euclidean distance between ship position and the center of each pixel. 
+
+File name is *ice history data.csv*. It can be opened in Excel although you will have to select the first column and click Data – Convert to choose the separator as coma. You can filter the data per station –which will give you the changes of sic (sea ice coverage) over time (ice_date being the date of sic estimation) or by ice_date to see the status of sea ice coverage at all stations for a given day.
 
 ## Example
 
