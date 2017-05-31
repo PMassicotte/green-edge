@@ -89,3 +89,4 @@ res %>%
 
 ggsave("graphs/ice_concentration_ice_camp_2015_2016.pdf", height = 4)
 embed_fonts("graphs/ice_concentration_ice_camp_2015_2016.pdf")
+
