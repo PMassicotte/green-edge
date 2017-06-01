@@ -1,0 +1,122 @@
+---
+title: "Historic of sea ice concentration at the ice camp"
+author: "Philippe Massicotte"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+    latex_engine: xelatex
+  # word_document: default
+mainfont: Open Sans
+fontsize: 12
+---
+
+```{r, message=FALSE, echo=FALSE}
+library(tidyverse)
+
+library(extrafont)
+loadfonts(quiet = TRUE)
+theme_set(theme_bw(base_size = 10, base_family = "Open Sans"))
+
+df2015 <- readr::read_csv("../../data/clean/ice_concentration_history_ice_camp_2015.csv")
+df2016 <- readr::read_csv("../../data/clean/ice_concentration_history_ice_camp_2016.csv")
+
+df <- dplyr::bind_rows(df2015, df2016)
+
+```
+
+This document presents an overview of the methodology used to extract the historic of sea ice concentration at the Qikiqtarjuaq ice camp (project Green Edge).
+
+## Data
+
+Sea ice concentration has been extracted from AMSR2 radiometer on a 3.125 km grid. The historic of sea ice concentration was extracted between May 1st and July 31th of each year. Sea ice concentration was extracted from the closest pixel using the Euclidean distance between the ice camp and the center of each pixel. 
+
+```{r, echo = FALSE, fig.align='center', message=FALSE}
+longitude_pixel <- -63.77872
+latitude_pixel <- 67.47679
+
+longitude_ic <- -63.78953
+latitude_ic <- 67.47973
+
+label <- data_frame(
+  longitude = c(longitude_pixel, longitude_ic),
+  latitude = c(latitude_pixel, latitude_ic),
+  label = c("pixel", "ice camp")
+  )
+
+library(ggmap)
+
+al1 <- get_map(location = c(lon = -63.78953, lat = 67.47973), zoom = 11, maptype = 'roadmap')
+
+ggmap(al1) + 
+  geom_point(data = label, aes(x = longitude, y = latitude), color = "red", inherit.aes = FALSE) +
+  ggrepel::geom_label_repel(data = label, aes(x = longitude, y = latitude, label = label), inherit.aes = FALSE) +
+  xlab("Longitude") +
+  ylab("Latitude")
+  
+
+```
+
+The distance between the ice camp and the center of the pixel is `r geosphere::distVincentyEllipsoid(label[1, 1:2], label[2, 1:2])` meters. The data has been divided into two files, one for each year. The data is organized as follow:
+
+```{r, echo = FALSE}
+knitr::kable(head(df2015))
+```
+
+## Visualization
+
+This graphic presents the SIC for both 2015 and 2016.
+
+```{r, echo = FALSE, fig.align='center', fig.width=10, fig.height=4}
+
+title <-
+  stringr::str_wrap(
+    sprintf(
+      "Sea ice concentration at Qikiqtarjuaq (lat = %2.6f, lon = %2.6f)",
+      67.47973,
+      -63.78953
+    ))
+
+caption <- "Source: ftp://ftp-projects.cen.uni-hamburg.de/seaice/AMSR2/3.125km/\nSee Data under 'List Parameters', 'param' = Sea Ice Concentration, 'resp' = Philippe Massicotte."
+
+df %>% 
+  mutate(year = format(date, "%Y")) %>% 
+  ggplot(aes(x = date, y = sic)) +
+  geom_point(size = 1) +
+  geom_line() +
+  facet_wrap(~year, scales = "free") +
+  xlab("Date") +
+  ylab("SIC (%)") +
+  labs(title = title,
+       caption = caption)
+
+```
+
+## Other sources of data
+
+The infamous "ice line" is also available on our glider's webpage. For every day since the beginning of March 2016, you will find the "arctic_line_yyyyddd.kmz" file there, however these data cover the entire arctic area so some modifications might be necessary:
+
+http://gliders.takuvik.ulaval.ca/kmz/archive/
+
+Another source of sea ice line data is the NOAA website. Data @NatIce are available in kmz, text and shapefiles format. These files are GIS so they are meant to be read by a GIS software: 
+
+http://www.natice.noaa.gov/products/daily_products.html
+
+## How to cite the data
+
+If you use this dataset please cite University of Hamburg and the following article:
+
+Beitsch, A.; Kaleschke, L.; Kern, S. Investigating High-Resolution AMSR2 Sea Ice Concentrations during the February 2013 Fracture Event in the Beaufort Sea. Remote Sens. 2014, 6, 3841-3856, doi:10.3390/rs6053841
+
+Paper Open Access available online: http://www.mdpi.com/2072-4292/6/5/3841
+
+For citations of the data itself you may use:
+
+Kaleschke, L. and X. Tian-Kunze (2016), "AMSR2 ASI 3.125 km Sea Ice Concentration Data, V0.1", Institute of Oceanography, University of Hamburg, Germany, digital media (ftp-projects.zmaw.de/seaice/).
+
+## Detailed information
+
+Detailed information can be found in the following official README file: 
+
+- ftp://ftp-projects.cen.uni-hamburg.de/seaice/AMSR2/README.txt

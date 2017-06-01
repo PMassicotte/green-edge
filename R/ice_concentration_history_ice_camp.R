@@ -72,9 +72,21 @@ res <- map(files, extract_sic, index = inds) %>%
   mutate(latitude = coordinates(station)[2]) %>% 
   mutate(longitude = coordinates(station)[1])
 
-write_csv(res, "data/clean/ice_concentration_ice_camp_2015_2016.csv")
+## Export data
+write_csv(filter(res, str_detect(date, "2015")), "data/clean/ice_concentration_history_ice_camp_2015.csv")
+write_csv(filter(res, str_detect(date, "2016")), "data/clean/ice_concentration_history_ice_camp_2016.csv")
 
-## Some plots
+# Plot --------------------------------------------------------------------
+
+title <-
+  stringr::str_wrap(
+    sprintf(
+      "Sea ice concentration at Qikiqtarjuaq (lat = %2.6f, lon = %2.6f)",
+      coordinates(station)[2],
+      coordinates(station)[1]
+    ))
+
+caption <- "Source: ftp://ftp-projects.cen.uni-hamburg.de/seaice/AMSR2/3.125km/\nSee Data under 'List Parameters', 'param' = Sea Ice Concentration, 'resp' = Philippe Massicotte."
 
 res %>% 
   mutate(year = format(date, "%Y")) %>% 
@@ -84,8 +96,8 @@ res %>%
   facet_wrap(~year, scales = "free") +
   xlab("Date") +
   ylab("SIC (%)") +
-  labs(title = "Sea ice concentration",
-       caption = "Source: ftp://ftp-projects.cen.uni-hamburg.de/seaice/AMSR2/3.125km/")
+  labs(title = title,
+       caption = caption)
 
 ggsave("graphs/ice_concentration_ice_camp_2015_2016.pdf", height = 4)
 embed_fonts("graphs/ice_concentration_ice_camp_2015_2016.pdf")
