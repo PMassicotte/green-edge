@@ -57,7 +57,10 @@ cdom <- cdom %>%
   mutate(qf = ifelse(absorption[wavelength == 350] > 1.8, 6, qf)) %>% 
   mutate(qf = ifelse(any(absorption[between(wavelength, 350, 500)] < 0), 9, qf))
 
-write_csv(cdom, "data/clean/cdom_am.csv")
+cdom <- cdom %>% 
+  select(-r, -s, -cv_absorption)
+
+write_csv(cdom, "data/clean/cdom_amundsen_2016.csv")
 
 # ****************************************************************************
 # CDOM from the ice camp
@@ -91,7 +94,7 @@ cdom <- cv %>%
   dplyr::select(-median_absorption_683_687) %>% 
   ungroup()
 
-# write_csv(cdom, "/home/pmassicotte/Desktop/uncorrected_spectra_IC2016.csv")
+write_csv(cdom, "data/clean/uncorrected_cdom_ice_camp_2015.csv")
 
 cv <- cv %>% 
   filter(sample_type == "s") %>% 
@@ -160,4 +163,4 @@ cdom <- cdom %>%
   mutate(qf = ifelse(absorption[wavelength == 350] > 1.8, 6, qf)) %>% 
   mutate(qf = ifelse(any(absorption[between(wavelength, 350, 500)] < 0), 9, qf))
 
-write_csv(cdom, "data/clean/cdom_ic_2105.csv")
+write_csv(cdom, "data/clean/cdom_ice_camp_2015.csv")
