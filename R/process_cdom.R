@@ -66,7 +66,7 @@ write_csv(cdom, "data/clean/cdom_amundsen_2016.csv")
 # CDOM from the ice camp
 # ****************************************************************************
 
-cdom_ice_camp <- read_feather("data/cdom/cdom_ice_camp_ge2015.feather")
+cdom_ice_camp <- read_feather("data/cdom/cdom_ice_camp_ge2016.feather")
 
 cv <- cdom_ice_camp %>%
   group_by(wavelength,
@@ -94,7 +94,7 @@ cdom <- cv %>%
   dplyr::select(-median_absorption_683_687) %>% 
   ungroup()
 
-write_csv(cdom, "data/clean/uncorrected_cdom_ice_camp_2015.csv")
+write_csv(cdom, "data/clean/uncorrected_cdom_ice_camp_2016.csv")
 
 cv <- cv %>% 
   filter(sample_type == "s") %>% 
@@ -106,7 +106,7 @@ cdom %>%
   geom_line()
 
 ## Data needed to account for the diluation of the ice cores
-dilution_info <- read_delim("data/cdom/ge2015_svfile_for_database_temp_20170512.csv", delim = "\t", locale = locale(encoding = "UTF-7")) %>% 
+dilution_info <- read_delim("data/cdom/ge2016_svfile_20161202_IC_to_PM.csv", delim = "\t", locale = locale(encoding = "UTF-7")) %>% 
   janitor::clean_names() %>% 
   select(cast, jday = stnid, filtered_volumn_ml, added_fsw_ml, total_volumn_ml) %>% 
   mutate(jday = as.character(jday)) %>% 
@@ -163,4 +163,4 @@ cdom <- cdom %>%
   mutate(qf = ifelse(absorption[wavelength == 350] > 1.8, 6, qf)) %>% 
   mutate(qf = ifelse(any(absorption[between(wavelength, 350, 500)] < 0), 9, qf))
 
-write_csv(cdom, "data/clean/cdom_ice_camp_2015.csv")
+write_csv(cdom, "data/clean/cdom_ice_camp_2016.csv")

@@ -84,7 +84,7 @@ files <- files[!grepl("ori", files)]
 
 cdom_amundsen <- purrr::map(files, read_ultrapath) %>% 
   bind_rows() %>% 
-  filter(wavelength >= 250) %>% 
+  # filter(wavelength >= 250) %>% 
   filter(sample_type %in% c("r", "s"))
 
 write_feather(cdom_amundsen, "data/cdom/cdom_amundsen_ge2016.feather")
@@ -97,7 +97,6 @@ files <- files[!grepl("ori", files)]
 
 cdom_ice_camp <- purrr::map(files, read_ultrapath) %>% 
   bind_rows() %>% 
-  filter(wavelength >= 250) %>% 
   filter(sample_type %in% c("r", "s"))
 
 write_feather(cdom_ice_camp, "data/cdom/cdom_ice_camp_ge2016.feather")
@@ -111,7 +110,6 @@ files[str_count(basename(files), "_") != 7]
 
 cdom_ice_camp <- purrr::map(files, read_ultrapath) %>% 
   bind_rows() %>% 
-  filter(wavelength >= 250 & wavelength <= 722) %>% 
   filter(sample_type %in% c("r", "s"))
 
 write_feather(cdom_ice_camp, "data/cdom/cdom_ice_camp_ge2015.feather")
