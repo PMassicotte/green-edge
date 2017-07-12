@@ -41,7 +41,7 @@ calculate_metrics <- function(mod, data) {
   pm <- ps * (alpha / (alpha + beta)) * (beta / (alpha + beta)) ^ (beta / alpha)
   ek <- pm / alpha
   
-  im <- ps / alpha * log(exp((alpha + beta) / beta))
+  im <- (ps / alpha) * log((alpha + beta) / beta)
   ib <- ps  / beta
   
   ## Normalize
@@ -80,7 +80,7 @@ process_dpm <- function(df, volume_incubation, volume_pipette_tc) {
 }
 
 # file <- "data/pe-curves/GE2015-PvsE-Takuvik_14C_dpm_20170302.xlsx"
-file <- "data/pe-curves/GE2016-PvsE_DPM_20170328.xlsx"
+file <- "data/pe-curves/GE2015-PvsE_DPM_20170412.xlsx"
 
 df <- read_excel(
   file,
@@ -289,4 +289,4 @@ params <- df %>%
   unnest(params) %>% 
   dplyr::select(-data, -model)
 
-# write.csv(params, "data/pe-curves//Photosynthetic_parameters.csv")
+write_csv(params, "data/pe-curves/photosynthetic_parameters_2015.csv")
