@@ -141,6 +141,8 @@ plot_wind_speed <- function(file) {
     mutate(speed = sqrt(u ^ 2 + v ^ 2)) %>%
     mutate(lon = ifelse(lon > 180, lon - 360, lon)) 
   
+  # return(df)
+  
   date <- paste(as.Date(str_extract(file, "\\d{8}"), format = "%Y%m%d"), "00:00:00")
   
   map <- ggplot2::map_data(map = "world")
@@ -150,19 +152,20 @@ plot_wind_speed <- function(file) {
     ggplot(aes(x = lon, y = lat, fill = speed)) +
     geom_raster() +
     geom_path(data = map, aes(x = long, y = lat, group = group), inherit.aes = FALSE, color = "gray75", size = 0.1) +
-    viridis::scale_fill_viridis() +
+    viridis::scale_fill_viridis(limits = c(0, 33)) +
     coord_fixed(expand = FALSE, xlim = c(-80, -25), ylim = c(45, 78), ratio = 1) +
     labs(title = date) +
     xlab("Longitude") +
     ylab("Latitude") +
     labs(fill = bquote(atop(Wind~speed, "("*m%*%s^{-1}*")")))
   
-  fn <- paste0("graphs/wind_speed/", as.Date(date), ".pdf")
+  fn <- paste0("graphs/wind_speed/", as.Date(date), ".png")
   ggsave(fn, p)
   
 }
 
-lapply(file, plot_wind_speed)
+res <- lapply(file, plot_wind_speed)
 
+# res <- res %>% bind_rows(res)
 
 
