@@ -1,0 +1,110 @@
+---
+title: "Method description for the PE curves"
+header-includes:
+   - \usepackage{float}
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(feather)
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This document presents a general overview of the different steps that were used to calculate the photosynthetic parameters. These parameters have been determined from the P vs E curves obtained according to a method derived from Lewis and Smith (1983) both on water samples taken from the rosette and ice core bottom (last cm, see an example in Fig. \ref{fig:pvse}). Some samples were also collected directly under the ice (UISW). 
+
+\begin{figure}[H]
+\centering
+\includegraphics[page = 52]{../../graphs/pe-curves/ge2016.pdf}
+\caption{Example of a fitted PvsE curve.}
+\label{fig:pvse}
+\end{figure}
+
+Two different models based on the original definition proposed by (Platt et al., 1980) were used depending on the situation.
+
+### Model with photoinhibition
+
+When apparent photo-inhibition was present, a model including two exponential was fitted (equation \ref{eq:two_exp}).
+
+\begin{equation}
+p = ps \times (1 - e^{-\alpha \times \frac{light}{ps}}) \times e^{-\beta \times \frac{light}{ps}} + p0
+\label{eq:two_exp}
+\end{equation}
+
+### Model without photoinhibition
+
+When no apparent photo-inhibition was present, a model including only one exponential was fitted (equation \ref{eq:one_exp}).
+
+\begin{equation}
+p = ps \times (1 - e^{-\alpha \times \frac{light}{ps}}) + p0
+\label{eq:one_exp}
+\end{equation}
+
+The non-linear fitting was done using the Levenberg-Marquardt algorithm implemented in the minpack.lm R package (Timur et al. 2016).
+
+## Dissolved inorganic carbon (DIC) calculation
+
+The calculation of photosynthetic production requiers DIC values (see W in the following equation).
+
+Photosynthetic production  = (Rs-Rb) x W / (R x N)
+
+- R: total activity (dpm) of bicarbonate added
+- N: number of hours of incubation
+- Rs: sample count (dpm) corrected for background quenching
+- Rb: dark bottle count corrected for quenching
+- W: weight of total carbon dioxide (mg C m-3) -> DIC
+
+However, there was not always DIC measurements for each Production versus Irradiance (PvsE) curve. Therefore we tested three different methods to estimate DIC from salinity. After visual inspection and discussions with Marcel Babin and Patrick Raimbault it was decided to use fixed DIC concentrations (ug x L-1) for two ranges of salinity in the conversion of "Disintegrated count Per Minute" (dpm) to production values (mg C m-3 h-1, Parsons et al. 1984). DIC for salinity >= 30 was fixed to 25900 ug L-1, otherwise to 24000 ug L-1.
+
+## Exported variables
+
+The following variables are available:
+
+| Variable | Unit                                           |
+|----------|------------------------------------------------|
+| ps       | mg C m-3 h-1                                   |
+| $\alpha$    | mg C m-3 h-1 [$\mu$mol photon m-2 s-1 ]-1          |
+| $\beta$     | $\mu$mol photon m-2  s-1                           |
+| p0       | mg C m-3  h-1                                  |
+| pm       | mg C m-3  h-1                                  |
+| ek       | $\mu$mol photon m-2  s-1                           |
+| im       | $\mu$mol photon m-2  s-1                           |
+| ib       | $\mu$mol photon m-2  s-1                           |
+| alpha_b  | mg C m-3  chl -1 h-1  [$\mu$mol photonm-2  s-1 ]-1 |
+| beta_b   | [$\mu$mol photonm-2  s-1] mg chl-1                 |
+| pb_max   | mg C mg chl-1  h-1                             |
+
+Variable $ps$, $\alpha$, $\beta$ and $p0$ are from equations 1 and 2. Note that $\alpha\_b$ and $pb\_max$ are normalized by chl-a measured from HPLC.
+
+Other variables are defined as:
+
+\begin{equation}
+pm = ps \times \frac{\alpha}{\alpha + \beta} \times \frac{\beta}{\alpha + \beta}^{\frac{\beta}{\alpha}}
+\end{equation}
+
+\begin{equation}
+ek = \frac{pm}{\alpha}
+\end{equation}
+
+\begin{equation}
+im = \frac{ps}{\alpha} \times ln(\frac{\alpha + \beta}{\beta})
+\end{equation}
+
+\begin{equation}
+ib = \frac{ps}{\beta}
+\end{equation}
+
+## References
+
+Lewis, M. R. and J. C. Smith (1983). "A small volume, short-incubation-time method for measurements of photosynthesis as a function of incident irradiance." Marine Ecology Progress Series 13: 99-102.
+
+Plat, T., C.L. Gallegos and W.G. Harrison (1980). Photo-inhibition o photosynthesis in natural assemblages of marine phytoplankton. J. Mar. Res. 38:687-701.
+
+Timur V. Elzhov, Katharine M. Mullen, Andrej-Nikolai Spiess and Ben Bolker (2016). minpack.lm: R Interface to the Levenberg-Marquardt Nonlinear Least-Squares Algorithm Found in MINPACK, Plus Support for Bounds. R package version 1.2-1. https://CRAN.R-project.org/package=minpack.lm
+
+Parsons, T.R., Maita, Y., Lalli, C.M., 1984. A Manual of Chemical and Biological Methodsfor Seawater Analysis. Pergamon Press, Toronto
