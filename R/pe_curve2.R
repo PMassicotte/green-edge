@@ -59,7 +59,14 @@ calculate_metrics <- function(mod, data) {
 
 
 sal_to_dic <- function(salinity) {
-  return(((salinity * 0.067) - 0.05) * 0.96 * 12000)
+  
+  # return(((salinity * 0.067) - 0.05) * 0.96 * 12000)
+  
+  # DIC in ug, validated by Marcel and Patrick R. 
+  dic <- ifelse(salinity >= 30, 25900, 24000)
+  
+  return(dic)
+  
 }
 
 process_dpm <- function(df, volume_incubation, volume_pipette_tc) {
