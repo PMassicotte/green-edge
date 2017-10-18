@@ -69,14 +69,14 @@ The following variables are available:
 |----------|------------------------------------------------|
 | ps       | mg C m-3 h-1                                   |
 | $\alpha$    | mg C m-3 h-1 [$\mu$mol photon m-2 s-1 ]-1          |
-| $\beta$     | $\mu$mol photon m-2  s-1                           |
+| $\beta$     | mg C m-3 h-1 [$\mu$mol photon m-2 s-1 ]-1                           |
 | p0       | mg C m-3  h-1                                  |
 | pm       | mg C m-3  h-1                                  |
 | ek       | $\mu$mol photon m-2  s-1                           |
 | im       | $\mu$mol photon m-2  s-1                           |
 | ib       | $\mu$mol photon m-2  s-1                           |
-| alpha_b  | mg C m-3  chl -1 h-1  [$\mu$mol photonm-2  s-1 ]-1 |
-| beta_b   | [$\mu$mol photonm-2  s-1] mg chl-1                 |
+| alpha_b  | mg C mg chl-1 h-1 [$\mu$mol photon m-2 s-1 ]-1 |
+| beta_b   | mg C mg chl-1 h-1 [$\mu$mol photon m-2 s-1 ]-1                |
 | pb_max   | mg C mg chl-1  h-1                             |
 
 Variable $ps$, $\alpha$, $\beta$ and $p0$ are from equations 1 and 2. Note that $\alpha\_b$ and $pb\_max$ are normalized by chl-a measured from HPLC.
