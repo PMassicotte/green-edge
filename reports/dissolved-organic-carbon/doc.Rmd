@@ -1,0 +1,190 @@
+---
+title: "Overview of dissolved organic carbon"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, fig.width = 7, fig.align = "center")
+
+#<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+# FILE:         main.R
+#
+# AUTHOR:       Philippe Massicotte
+#
+# DESCRIPTION:  Load packages and setup for the project.
+#<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
+
+# Setup -------------------------------------------------------------------
+
+library(extrafont)
+library(tidyverse)
+library(GGally)
+
+rm(list = ls())
+graphics.off()
+
+## Set default ggplot2 font size and font family
+
+loadfonts(quiet = TRUE)
+theme_set(theme_bw(base_size = 10, base_family = "Open Sans"))
+
+raimbault <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 1) %>% 
+  janitor::clean_names() %>% 
+  select(
+    jday = station,
+    depth,
+    doc
+  ) %>% 
+  mutate(source = "raimbault")
+
+christos <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 2) %>% 
+  janitor::clean_names() %>% 
+  select(
+    jday = station,
+    depth,
+    doc
+  ) %>% 
+  mutate(source = "christos") %>% 
+  filter(doc != 139) 
+
+atsushi <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 3) %>% 
+  janitor::clean_names() %>% 
+  select(
+    jday = julian_day,
+    depth = depth_m,
+    doc = doc_umol_l
+  ) %>% 
+  mutate(source = "atsushi")
+
+df <- bind_rows(raimbault, christos, atsushi) %>% 
+  drop_na(jday, depth, doc)
+
+
+```
+
+## Time series
+
+Overview of the time series from the three sources of DOC.
+
+```{r}
+df %>% 
+  group_by(depth) %>% 
+  filter(n() > 1) %>% 
+  ggplot(aes(x = jday, y = doc, color = source)) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~depth) +
+  labs(title = "Time series of DOC. Numbers in gray boxes are the depths (meters)")
+```
+
+## Vertical profiles
+
+DOC vertical profiles per day.
+
+```{r, fig.width=10, fig.height=8}
+df %>% 
+  ggplot(aes(x = doc, y = depth, color = source)) +
+  geom_point() +
+  geom_path() +
+  facet_wrap(~jday, scales = "free_y") +
+  scale_y_reverse() +
+  labs(title = "Numbers in gray boxes are the julian days")
+```
+
+
+## Boxplots
+
+The following boxplot compares the median values of the three DOC sources. Visually, is seems that Atsushi DOC values are a bit lower compared to other sources.
+
+```{r, fig.height=4, fig.width=5}
+df %>% 
+  ggplot(aes(x = source, y = doc)) +
+  geom_boxplot()
+```
+
+A simple ANOVA shows that there is at least one group different among the three.
+
+```{r}
+mod <- aov(doc ~ source, data = df)
+knitr::kable(broom::tidy(mod))
+```
+
+Refining the previous ANOVA analysis, the Tukey Honest differences shows that indeed Christos and Raimbault DOC are on average 7.23 and 9.01 $\mu$~mol higher than that of Atsushi. On other hand, there is no significant different difference between Raimvault and Christos DOC values even thought they are not correlated (see bellow).  
+
+```{r}
+knitr::kable(broom::tidy(TukeyHSD(mod)))
+```
+
+The following graphs explore the differences by depths.
+
+```{r}
+df %>% 
+  group_by(depth) %>% 
+  filter(n_distinct(source) > 1) %>% 
+  ggplot(aes(x = source, y = doc, group = source)) +
+  geom_boxplot(size = 0.25, width = 0.8) +
+  facet_wrap(~depth)
+```
+
+## Correlations
+
+Based on the following graphs, there is not much correlation between the three DOC sources.
+
+```{r}
+df %>% 
+  spread(source, doc) %>% 
+  ggpairs(columns = 3:5) +
+  labs(title = "Correlation plots between the three DOC sources")
+  
+```
+
+### Atsushi vs Raimbault
+
+```{r, fig.width=8, fig.height=3}
+df %>% 
+  spread(source, doc) %>% 
+  drop_na() %>% 
+  group_by(depth) %>% 
+  filter(n() > 1) %>% 
+  ggplot(aes(x = atsushi, y = raimbault)) +
+  geom_point() +
+  facet_wrap(~depth, scales = "free") +
+  geom_smooth(method = "lm") +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  labs(title = "Correlation by depth with 1:1 line (dashed). Number in top graybox is the sampling depth.")
+```
+
+### Atsushi vs Christos
+
+```{r, fig.width=8, fig.height=3}
+df %>% 
+  spread(source, doc) %>% 
+  drop_na() %>% 
+  group_by(depth) %>% 
+  filter(n() > 1) %>% 
+  ggplot(aes(x = atsushi, y = christos)) +
+  geom_point() +
+  facet_wrap(~depth, scales = "free") +
+  geom_smooth(method = "lm") +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  labs(title = "Correlation by depth with 1:1 line (dashed). Number in top graybox is the sampling depth.")
+```
+
+### Christos vs Raimbault
+
+```{r, fig.width=8, fig.height=3}
+df %>% 
+  spread(source, doc) %>% 
+  drop_na() %>% 
+  group_by(depth) %>% 
+  filter(n() > 1) %>%
+  ggplot(aes(x = christos, y = raimbault)) +
+  geom_point() +
+  facet_wrap(~depth, scales = "free") +
+  geom_smooth(method = "lm") +
+  geom_abline(slope = 1, intercept = 0, lty = 2) +
+  labs(title = "Correlation by depth with 1:1 line (dashed). Number in top graybox is the sampling depth.")
+```
