@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, fig.width = 7, fig.align = "center")
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 7, fig.align = "center")
 
 #<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>
 # FILE:         main.R
@@ -31,7 +31,7 @@ graphics.off()
 loadfonts(quiet = TRUE)
 theme_set(theme_bw(base_size = 10, base_family = "Open Sans"))
 
-raimbault <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 1) %>% 
+raimbault <- readxl::read_excel("doc.xlsx", sheet = 1) %>% 
   janitor::clean_names() %>% 
   select(
     jday = station,
@@ -40,7 +40,7 @@ raimbault <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 1) %>%
   ) %>% 
   mutate(source = "raimbault")
 
-christos <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 2) %>% 
+christos <- readxl::read_excel("doc.xlsx", sheet = 2) %>% 
   janitor::clean_names() %>% 
   select(
     jday = station,
@@ -50,7 +50,7 @@ christos <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 2) %>%
   mutate(source = "christos") %>% 
   filter(doc != 139) 
 
-atsushi <- readxl::read_excel("~/Desktop/doc.xlsx", sheet = 3) %>% 
+atsushi <- readxl::read_excel("doc.xlsx", sheet = 3) %>% 
   janitor::clean_names() %>% 
   select(
     jday = julian_day,
@@ -188,3 +188,27 @@ df %>%
   geom_abline(slope = 1, intercept = 0, lty = 2) +
   labs(title = "Correlation by depth with 1:1 line (dashed). Number in top graybox is the sampling depth.")
 ```
+
+## Correlation with CDOM data
+
+The next graph shows the relationships between DOC and CDOM absorption (m-1) at 5 wavelengths (250, 300, 350, 400 and 450 nm). As we can see, there are no relations between DOC and aCDOM. 
+
+```{r, fig.width=8}
+cdom <- read_csv("../../data/clean/cdom_ice_camp_2016.csv") %>% 
+  filter(water_type == "wat") %>% 
+  select(jday, wavelength, to_depth, absorption) %>% 
+  mutate(depth = parse_number(to_depth))
+
+res <- inner_join(df, cdom)
+
+res %>% 
+  filter(wavelength %in% c(250, 300, 350, 400, 450)) %>% 
+  ggplot(aes(x = absorption, y = doc)) +
+  geom_point(aes(color = factor(depth))) +
+  facet_grid(source ~ wavelength, scales = "free") +
+  geom_smooth(method = "lm") +
+  labs(color = "Depth (m)")
+    
+
+```
+
