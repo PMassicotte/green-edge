@@ -1,5 +1,6 @@
 
 # ftp://ftp-projects.zmaw.de/seaice/AMSR2/
+# ftp://ftp-projects.cen.uni-hamburg.de/seaice/AMSR2/3.125km/
 
 rm(list = ls())
 
