@@ -94,9 +94,8 @@ df <- read_excel(
   skip = 5,
   sheet = 2
 ) %>%
-  janitor::clean_names() %>%
-  janitor::remove_empty_cols() %>%
-  janitor::remove_empty_rows() %>%
+  janitor::clean_names(case = "old_janitor") %>%
+  janitor::remove_empty() %>%
   mutate(date = as.Date(as.character(julianday), format = "%Y%j")) %>%
   dplyr::select(-julianday) %>%
   dplyr::select(id,
@@ -285,11 +284,11 @@ plot_curve <- function(df, model, date, depth, model_type) {
 }
 
 
-# pdf("graphs/pe-curves/ge2016.pdf", width = 5, height = 4)
-# 
-# pmap(list(df$data, df$model, df$date, df$depth_m, df$model_type) , plot_curve)
-# 
-# dev.off()
+pdf("graphs/pe-curves/ge2015.pdf", width = 5, height = 4)
+
+pmap(list(df$data, df$model, df$date, df$depth_m, df$model_type) , plot_curve)
+
+dev.off()
 
 params <- df %>% 
   mutate(params = purrr::map2(model, data, calculate_metrics)) %>% 

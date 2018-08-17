@@ -82,9 +82,9 @@ amundsen <- readxl::read_excel("data/GE_Amundsen_Station_Coordinates.xlsx") %>%
   SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj4string(area))) %>% 
   spTransform(proj)
 
-files <- list.files("data/ice_concentration/", "2016\\d{4}\\S+pyres.nc$", full.names = TRUE)
+files <- list.files("data/ice_concentration/amundsen/", "2016\\d{4}\\S+pyres.nc$", full.names = TRUE)
 
-res <- lapply(files, extract_sic, lon = lon, lat = lat, amundsen = amundsen, proj = proj) %>% 
+res <- pbmclapply(files, extract_sic, mc.cores = detectCores() - 1, lon = lon, lat = lat, amundsen = amundsen, proj = proj) %>% 
   bind_rows() %>% 
   as_tibble() %>% 
   dplyr::select(-coords.x1, -coords.x2)
@@ -105,20 +105,20 @@ final <- res %>%
          ice_date,
          sic = sic)
 
-write_csv(final, "data/clean/ice_history.csv")
+write_csv(final, "data/clean/ice_concentration_history_amundsen.csv")
 
 
 ## TEST
 
 # rm(list = ls())
 # 
-# df <- read_csv("data/clean/ice_history.csv")
+# df <- read_csv("data/clean/ice_concentration_history_amundsen.csv")
 # 
 # unique(df$station)
 # 
 # 
-# df %>% 
-#   filter(station %in% c("Crossby", "G713", "DIC1")) %>% 
+# df %>%
+#   filter(station %in% c("Crossby", "G713", "DIC1")) %>%
 #   ggplot(aes(x = ice_date, y = sic, color = station)) +
 #   geom_point() +
 #   geom_line() +

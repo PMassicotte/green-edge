@@ -67,12 +67,13 @@ inds <- SearchTrees::knnLookup(tree, newdat = coordinates(station), k = 1)
 ## Extract all SIC
 files <- list.files("data/ice_concentration/ice-camp/", ".nc$", full.names = TRUE, recursive = TRUE)
 
-res <- map(files, extract_sic, index = inds) %>% 
+res <- pbmclapply(files, extract_sic, index = inds, mc.cores = detectCores() - 1) %>% 
   bind_rows() %>% 
   mutate(latitude = coordinates(station)[2]) %>% 
   mutate(longitude = coordinates(station)[1])
 
 ## Export data
+write_csv(filter(res, str_detect(date, "2014")), "data/clean/ice_concentration_history_ice_camp_2014.csv")
 write_csv(filter(res, str_detect(date, "2015")), "data/clean/ice_concentration_history_ice_camp_2015.csv")
 write_csv(filter(res, str_detect(date, "2016")), "data/clean/ice_concentration_history_ice_camp_2016.csv")
 
