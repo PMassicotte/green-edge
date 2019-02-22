@@ -82,6 +82,22 @@ amundsen <- readxl::read_excel("data/GE_Amundsen_Station_Coordinates.xlsx") %>%
   SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj4string(area))) %>% 
   spTransform(proj)
 
+## Add two stations for Leo LAcour
+
+# leo <- tibble(
+#   date_utc = as.Date(c("2016-06-14", "2016-07-09")),
+#   lat = c(68.585, 67.677),
+#   lon = c(-59.924, -59.902),
+#   station = c("leo1", "leo2"),
+#   cruise = "GE_AN201601",
+#   code_operation = "leo",
+#   station_type = "leo"
+# ) %>% 
+#   SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj4string(area))) %>% 
+#   spTransform(proj)
+# 
+# amundsen <-  rbind(amundsen, leo)
+
 files <- list.files("data/ice_concentration/amundsen/", "2016\\d{4}\\S+pyres.nc$", full.names = TRUE)
 
 res <- pbmclapply(files, extract_sic, mc.cores = detectCores() - 1, lon = lon, lat = lat, amundsen = amundsen, proj = proj) %>% 
@@ -89,21 +105,33 @@ res <- pbmclapply(files, extract_sic, mc.cores = detectCores() - 1, lon = lon, l
   as_tibble() %>% 
   dplyr::select(-coords.x1, -coords.x2)
 
+## 2 extra stations for Leo
+
+# amundsen2 <- tibble(
+#   lon = -59.902,
+#   lat = 67.677
+# ) %>% 
+#   SpatialPointsDataFrame(cbind(.$lon, .$lat), data = ., proj4string = CRS(proj4string(area))) %>% 
+#   spTransform(proj)
+# 
+# extract_sic("data/ice_concentration/amundsen/Arc_20160709_res3.125_pyres.nc", lon = lon, lat = lat, amundsen = amundsen2, proj = proj)
+
 # *************************************************************************
 # Format the data so it fits with what Flavienne asked.
 # *************************************************************************
 
-final <- res %>% 
-  mutate(lon = -lon) %>% 
-  dplyr::select(cruise, 
-         code_operation, 
-         date_utc,
-         lat_deg_n = lat,
-         long_deg_w = lon,
-         station,
-         station_type,
-         ice_date,
-         sic = sic)
+final <- res %>%
+  mutate(lon = -lon) %>%
+  dplyr::select(cruise,
+    code_operation,
+    date_utc,
+    lat_deg_n = lat,
+    long_deg_w = lon,
+    station,
+    station_type,
+    ice_date,
+    sic = sic
+  )
 
 write_csv(final, "data/clean/ice_concentration_history_amundsen.csv")
 
