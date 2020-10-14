@@ -341,7 +341,7 @@ plot_curve <- function(df, model, date, depth, model_type) {
       geom_abline(slope = alpha, intercept = p0, color = "blue", lwd = 0.25, lty = 2) +
       geom_hline(yintercept = p0, color = "blue", lwd = 0.25, lty = 2) +
       geom_hline(yintercept = pm + p0, color = "blue", lwd = 0.25, lty = 2) +
-      geom_vline(xintercept = ek, color = "blue", lwd = 0.25, lty = 2) 
+      geom_vline(xintercept = ek, color = "red", lwd = 0.25, lty = 2) 
   }
   
   return(p)

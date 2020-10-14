@@ -12,6 +12,8 @@ library(sf)
 library(stringr)
 library(parallel)
 library(pbmcapply)
+library(zoo)
+library(ggpmthemes)
 
 ## Clear the workspace
 rm(list = ls())
@@ -19,6 +21,6 @@ graphics.off()
 
 ## Set default ggplot2 font size and font family
 loadfonts(quiet = TRUE)
-theme_set(theme_bw(base_size = 12, base_family = "Open Sans"))
+theme_set(theme_exo())
 
 # source("R/extract_modis.R") # ATTENTION: takes few minutes

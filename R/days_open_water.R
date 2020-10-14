@@ -3,10 +3,10 @@ rm(list = ls())
 
 # c("G300", "G415", "G719") Stations where DOW have been manually set
 
-ic <- read_csv("data/clean/ice_concentration_history_amundsen.csv")
+ic <- read_csv("data/clean/ice_concentration_history_amundsen.csv") 
 
 # %>% 
-#   filter(station %in% c("G300", "G415", "G719"))
+#   filter(station %in% c("G510", "G415", "G300", "G415", "G719"))
 
 ## When was the sampling?
 sampling <- ic %>% 
@@ -48,19 +48,85 @@ ice3 %>%
   count(station) %>% 
   arrange(desc(n))
 
+
+# Manual classification ---------------------------------------------------
+
+## This was done by visual inspection (Joannie)
+
+ice3$dow_sic[ice3$station == "G209" & ice3$sic_target == 0.1] <- ic$sic[ic$station == "G209" & ic$ice_date == "2016-06-08"]
+ice3$dow_date[ice3$station == "G209" & ice3$sic_target == 0.1] <- "2016-06-08"
+ice3$dow_sic[ice3$station == "G209" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G209" & ic$ice_date == "2016-06-05"]
+ice3$dow_date[ice3$station == "G209" & ice3$sic_target == 0.5] <- "2016-06-05"
+
+ice3$dow_sic[ice3$station == "G300" & ice3$sic_target == 0.1] <- ic$sic[ic$station == "G300" & ic$ice_date == "2016-05-16"]
+ice3$dow_date[ice3$station == "G300" & ice3$sic_target == 0.1] <- "2016-05-16"
+ice3$dow_sic[ice3$station == "G300" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G300" & ic$ice_date == "2016-05-22"]
+ice3$dow_date[ice3$station == "G300" & ice3$sic_target == 0.5] <- "2016-05-22"
+ice3$dow_sic[ice3$station == "G300" & ice3$sic_target == 0.8] <- ic$sic[ic$station == "G300" & ic$ice_date == "2016-05-29"]
+ice3$dow_date[ice3$station == "G300" & ice3$sic_target == 0.8] <- "2016-05-29"
+
+ice3$dow_sic[ice3$station == "G414" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G414" & ic$ice_date == "2016-06-27"]
+ice3$dow_date[ice3$station == "G414" & ice3$sic_target == 0.5] <- "2016-06-27"
+ice3$dow_sic[ice3$station == "G414" & ice3$sic_target == 0.8] <- ic$sic[ic$station == "G414" & ic$ice_date == "2016-06-11"]
+ice3$dow_date[ice3$station == "G414" & ice3$sic_target == 0.8] <- "2016-06-11"
+
+ice3$dow_sic[ice3$station == "G415" & ice3$sic_target == 0.1] <- ic$sic[ic$station == "G415" & ic$ice_date == "2016-06-29"]
+ice3$dow_date[ice3$station == "G415" & ice3$sic_target == 0.1] <- "2016-06-29"
+ice3$dow_sic[ice3$station == "G415" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G415" & ic$ice_date == "2016-06-11"]
+ice3$dow_date[ice3$station == "G415" & ice3$sic_target == 0.5] <- "2016-06-11"
+ice3$dow_sic[ice3$station == "G415" & ice3$sic_target == 0.8] <- ic$sic[ic$station == "G415" & ic$ice_date == "2016-06-10"]
+ice3$dow_date[ice3$station == "G415" & ice3$sic_target == 0.8] <- "2016-06-10"
+
+ice3$dow_sic[ice3$station == "G416" & ice3$sic_target == 0.1] <- ic$sic[ic$station == "G416" & ic$ice_date == "2016-06-29"]
+ice3$dow_date[ice3$station == "G416" & ice3$sic_target == 0.1] <- "2016-06-29"
+ice3$dow_sic[ice3$station == "G416" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G416" & ic$ice_date == "2016-06-10"]
+ice3$dow_date[ice3$station == "G416" & ice3$sic_target == 0.5] <- "2016-06-10"
+ice3$dow_sic[ice3$station == "G416" & ice3$sic_target == 0.8] <- ic$sic[ic$station == "G416" & ic$ice_date == "2016-06-09"]
+ice3$dow_date[ice3$station == "G416" & ice3$sic_target == 0.8] <- "2016-06-09"
+
+ice3$dow_sic[ice3$station == "G510" & ice3$sic_target == 0.1] <- ic$sic[ic$station == "G510" & ic$ice_date == "2016-06-30"]
+ice3$dow_date[ice3$station == "G510" & ice3$sic_target == 0.1] <- "2016-06-30"
+ice3$dow_sic[ice3$station == "G510" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G510" & ic$ice_date == "2016-06-29"]
+ice3$dow_date[ice3$station == "G510" & ice3$sic_target == 0.5] <- "2016-06-29"
+ice3$dow_sic[ice3$station == "G510" & ice3$sic_target == 0.8] <- ic$sic[ic$station == "G510" & ic$ice_date == "2016-06-26"]
+ice3$dow_date[ice3$station == "G510" & ice3$sic_target == 0.8] <- "2016-06-26"
+
+ice3$dow_sic[ice3$station == "G719" & ice3$sic_target == 0.1] <- ic$sic[ic$station == "G719" & ic$ice_date == "2016-07-16"]
+ice3$dow_date[ice3$station == "G719" & ice3$sic_target == 0.1] <- "2016-07-16"
+ice3$dow_sic[ice3$station == "G719" & ice3$sic_target == 0.5] <- ic$sic[ic$station == "G719" & ic$ice_date == "2016-07-11"]
+ice3$dow_date[ice3$station == "G719" & ice3$sic_target == 0.5] <- "2016-07-11"
+ice3$dow_sic[ice3$station == "G719" & ice3$sic_target == 0.8] <- ic$sic[ic$station == "G719" & ic$ice_date == "2016-07-10"]
+ice3$dow_date[ice3$station == "G719" & ice3$sic_target == 0.8] <- "2016-07-10"
+
+ice4 <- ice3 %>% 
+  mutate(dow_length = as.vector(sampling_date - dow_date))
+
+anti_join(ice4 %>% select(-data), ice3 %>% select(-data))
+
+ice3 <- ice4
+
+# Save --------------------------------------------------------------------
+
 ice3 %>% 
   select(-data) %>% 
   write_csv("data/clean/dow_amundsen_2016.csv")
 
+
+# Visualize ---------------------------------------------------------------
+
 ice3 %>%
   unnest() %>% 
   filter(sic_target == 0.1) %>% 
+  filter(station == "G209") %>% 
   ggplot(aes(x = ice_date, y = sic)) +
   geom_line() +
   geom_point() +
-  geom_point(data = sampling, aes(x = date_utc, y = sic, color = "Sampling date"), size = 3) +
-  geom_point(data = ice3, aes(x = dow_date, y = dow_sic, color = factor(sic_target)), size = 3) +
-  facet_wrap(~station, scales = "free")
+  geom_point(data = sampling %>% filter(station == "G209"), aes(x = date_utc, y = sic, color = "Sampling date"), size = 3) +
+  geom_point(data = ice3 %>%  filter(station == "G209"), aes(x = dow_date, y = dow_sic, color = factor(sic_target)), size = 3)
+
+# +
+#   ggforce::facet_wrap_paginate(~station, scales = "free", nrow = 6, ncol = 6, page = NULL)
+  # facet_wrap(~station, scales = "free")
 
 p <- plotly::ggplotly()
 
